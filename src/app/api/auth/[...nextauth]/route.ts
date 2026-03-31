@@ -30,7 +30,7 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        // @ts-ignore
+        // @ts-expect-error - next-auth session user type extension
         session.user.id = token.id;
       }
       return session;

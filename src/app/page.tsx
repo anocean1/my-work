@@ -1,82 +1,66 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { LayoutDashboard, Users, Settings, LogOut } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Sidebar } from "@/widgets/Sidebar";
+import { Header } from "@/widgets/Header";
+import { StatCard } from "@/features/dashboard/components/StatCard";
 
 export default function Home() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { status } = useSession();
 
   if (status === "loading") {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
-  if (!session) {
-    return null; // Handled by middleware
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col">
-        <div className="p-6 text-xl font-bold border-b border-slate-700">Admin Console</div>
-        <nav className="flex-1 p-4 space-y-2">
-          <a href="#" className="flex items-center p-3 rounded hover:bg-slate-800 transition">
-            <LayoutDashboard className="mr-3 w-5 h-5" /> Dashboard
-          </a>
-          <a href="#" className="flex items-center p-3 rounded hover:bg-slate-800 transition">
-            <Users className="mr-3 w-5 h-5" /> Users
-          </a>
-          <a href="#" className="flex items-center p-3 rounded hover:bg-slate-800 transition">
-            <Settings className="mr-3 w-5 h-5" /> Settings
-          </a>
-        </nav>
-        <div className="p-4 border-t border-slate-700">
-          <button
-            onClick={() => signOut()}
-            className="flex items-center w-full p-3 rounded hover:bg-red-600 transition text-red-300 hover:text-white"
-          >
-            <LogOut className="mr-3 w-5 h-5" /> Logout
-          </button>
-        </div>
-      </aside>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Stat Cards Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <StatCard label="Total Users" value="1,234" />
+              <StatCard label="Active Sessions" value="56" />
+              <StatCard label="System Status" value="Healthy" status="healthy" />
+            </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Dashboard Overview</h2>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Logged in as: <strong>{session.user?.name}</strong></span>
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-              {session.user?.name?.charAt(0)}
+            {/* Content Area */}
+            <div className="p-8 bg-white rounded-lg shadow-sm border min-h-[400px]">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Welcome back to the Admin Console</h3>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                This central dashboard provides a high-level overview of your system's performance and user activity. 
+                Navigate through the sidebar to manage users, configurations, and review system logs.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+                <div className="p-6 bg-slate-50 rounded-lg border border-slate-100">
+                  <h4 className="font-semibold mb-2">Recent Updates</h4>
+                  <ul className="text-sm text-gray-500 space-y-2">
+                    <li>• New security patches applied on March 30, 2026</li>
+                    <li>• System performance optimized by 15%</li>
+                  </ul>
+                </div>
+                <div className="p-6 bg-slate-50 rounded-lg border border-slate-100">
+                  <h4 className="font-semibold mb-2">Quick Actions</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <button className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition">
+                      Invite User
+                    </button>
+                    <button className="px-3 py-1 bg-white border border-gray-200 text-gray-700 text-xs font-medium rounded hover:bg-gray-50 transition">
+                      View Logs
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </header>
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 bg-white rounded-lg shadow-sm border">
-              <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Users</h3>
-              <p className="text-3xl font-bold mt-2">1,234</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-sm border">
-              <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Active Sessions</h3>
-              <p className="text-3xl font-bold mt-2">56</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-sm border">
-              <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">System Status</h3>
-              <p className="text-3xl font-bold mt-2 text-green-500">Healthy</p>
-            </div>
-          </div>
-          <div className="mt-8 p-6 bg-white rounded-lg shadow-sm border min-h-[400px]">
-            <h3 className="text-lg font-semibold mb-4">Welcome to the Admin Console</h3>
-            <p className="text-gray-600">
-              This is your central hub for managing application resources, user accounts, and system configurations.
-              Use the sidebar to navigate through different administrative features.
-            </p>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
